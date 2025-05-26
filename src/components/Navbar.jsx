@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { HOME, PRODUCTOS, VENDER, LOGIN } from "../Routes/routes";
+import { HOME, PRODUCTOS, VENDER, LOGIN, MANAGE } from "../Routes/routes"; // Added MANAGE
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
@@ -31,9 +31,15 @@ const Navbar = () => {
         {currentUser &&
           (currentUser.role === ROLES.ADMIN ||
             currentUser.role === ROLES.EMPLEADO) && (
-            <Link to={VENDER} className="navbar-link">
-              Vender
-            </Link>
+            <>
+              <Link to={VENDER} className="navbar-link">
+                Vender
+              </Link>
+              <Link to={MANAGE} className="navbar-link">
+                {" "}
+                Manage
+              </Link>
+            </>
           )}
       </div>
 
