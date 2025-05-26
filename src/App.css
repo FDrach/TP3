@@ -1,7 +1,7 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
 }
 
@@ -41,7 +41,8 @@
   color: #888;
 }
 
-.product-list {
+.product-list,
+.vender-product-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -55,16 +56,10 @@
   margin: 10px;
 }
 
-
-
 /* Styles for Vender.jsx component */
 .vender-container {
   font-family: Arial, sans-serif;
   padding: 20px;
-}
-
-.vender-title {
-  /* No specific styles from inline, but good to have a class */
 }
 
 .vender-processing-message {
@@ -80,21 +75,18 @@
   border-radius: 4px;
 }
 
-.vender-no-products-message {
-  /* No specific styles from inline, but good to have a class */
-}
-
 .vender-product-list {
   list-style: none;
   padding: 0;
 }
 
-.vender-product-item {
+.vender-product-item,
+.product-card {
   border: 1px solid #ccc;
   margin: 10px 0;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .vender-product-name {
@@ -122,10 +114,6 @@
   margin: 4px 0;
 }
 
-.vender-product-stock {
-  /* color is dynamic (green/orange), better handled in component logic or with conditional classes */
-}
-
 .vender-product-ids {
   font-size: 0.8em;
   color: #666;
@@ -149,4 +137,162 @@
 .vender-sell-button-disabled {
   background-color: #aaa;
   cursor: not-allowed;
+}
+
+/* ... (existing styles from App.css) ... */
+
+/* Navbar Styles */
+.navbar {
+  background: #333;
+  padding: 1rem 2rem;
+  color: white;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-links,
+.navbar-user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.navbar-user-greeting {
+  color: #ddd;
+  font-size: 0.9em;
+}
+
+.navbar-button-logout {
+  background: #dc3545;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.navbar-button-login {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1em;
+  background-color: #007bff;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+/* Login Page Styles */
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: left;
+  background-color: #fff; /* Added a default background for better contrast if needed */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Added a subtle shadow for depth */
+}
+
+.login-title {
+  text-align: center; /* Assuming you might want the h2 centered */
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-form-group {
+  margin-bottom: 15px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.login-error-message {
+  color: red;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.login-button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+.login-button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* ... (existing styles from App.css) ... */
+
+/* ProtectedRoute Styles */
+.protected-route-loading {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.1em; /* Optional: for better visibility */
+  color: #555; /* Optional: for better visibility */
+}
+
+/* Unauthorized Page Styles */
+.unauthorized-container {
+  text-align: center;
+  margin-top: 50px;
+  padding: 20px;
+}
+
+.unauthorized-title {
+  color: #d9534f; /* A common error/warning color */
+  margin-bottom: 15px;
+}
+
+.unauthorized-message {
+  font-size: 1.1em;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.unauthorized-link {
+  color: #007bff; /* Using a common link blue */
+  text-decoration: underline;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.unauthorized-link:hover {
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
 }
