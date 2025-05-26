@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3001";
+
+const cap = (val) => {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+};
 
 const useGetProductos = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
       setLoading(true);
       setError(null);
       try {
@@ -49,6 +52,7 @@ const useGetProductos = () => {
                   color: savor.color,
                   precio: precio,
                   stock: stockCount,
+                  stockItemId: stockInfo.id,
                 });
               }
             });
@@ -67,21 +71,20 @@ const useGetProductos = () => {
         } else if (err.request) {
           setError("No response.");
         } else {
-          setError(err.message || "Error fetching.");
+          setError(
+            err.message || "Error fetching."
+          );
         }
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchProducts();
   }, []);
 
-  return { products, loading, error };
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  return { products, loading, error, refetch: fetchProducts };
 };
 
 export default useGetProductos;
-
-const cap = (val) => {
-  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
-};
