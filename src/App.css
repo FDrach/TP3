@@ -54,3 +54,99 @@
   padding: 10px;
   margin: 10px;
 }
+
+
+
+/* Styles for Vender.jsx component */
+.vender-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.vender-title {
+  /* No specific styles from inline, but good to have a class */
+}
+
+.vender-processing-message {
+  color: blue;
+  font-weight: bold;
+}
+
+.vender-error-message {
+  color: red;
+  font-weight: bold;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.vender-no-products-message {
+  /* No specific styles from inline, but good to have a class */
+}
+
+.vender-product-list {
+  list-style: none;
+  padding: 0;
+}
+
+.vender-product-item {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.vender-product-name {
+  margin-top: 0;
+  color: #333;
+}
+
+.vender-product-color-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vender-product-color-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  /* backgroundColor is dynamic, so it's better to keep it inline or handle via CSS variables if many fixed colors */
+  border: 1px solid #777;
+  margin-left: 8px;
+  border-radius: 3px;
+}
+
+.vender-product-detail {
+  margin: 4px 0;
+}
+
+.vender-product-stock {
+  /* color is dynamic (green/orange), better handled in component logic or with conditional classes */
+}
+
+.vender-product-ids {
+  font-size: 0.8em;
+  color: #666;
+  margin: 4px 0;
+}
+
+.vender-sell-button {
+  padding: 10px 18px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+.vender-sell-button-enabled {
+  background-color: #28a745;
+  cursor: pointer;
+}
+
+.vender-sell-button-disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
