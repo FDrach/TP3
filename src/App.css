@@ -338,7 +338,7 @@
   margin-top: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  /*  background-color: #f9f9f9;*/
   min-height: 200px; /* Placeholder height */
 }
 
@@ -357,6 +357,7 @@
 }
 .manage-clientes-container {
   padding: 20px;
+  border-radius: 5px;
 }
 
 .management-section-title {
