@@ -328,14 +328,14 @@
 }
 
 .manage-nav-link:hover,
-.manage-nav-link.active { /* You might need to add activeClassName for NavLink if you switch from Link */
+.manage-nav-link.active {
+  /* You might need to add activeClassName for NavLink if you switch from Link */
   background-color: #007bff;
   color: white;
 }
 
 .manage-content {
   margin-top: 20px;
-  padding: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -354,4 +354,415 @@
   margin-bottom: 15px;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
+}
+.manage-clientes-container {
+  padding: 20px;
+}
+
+.management-section-title {
+  /* Already defined in Manage.css, but can be overridden or extended */
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.add-cliente-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 1em;
+}
+.add-cliente-button:hover {
+  background-color: #218838;
+}
+.add-cliente-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+.loading-message {
+  color: #007bff;
+}
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+.form-error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+.clientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.clientes-table th,
+.clientes-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.clientes-table th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+.clientes-table tr:nth-child(even) {
+  background-color: #242424;
+}
+
+.clientes-table tr:hover {
+  background-color: #e9e9e9;
+}
+
+.clientes-table .edit-button,
+.clientes-table .delete-button {
+  padding: 6px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.clientes-table .edit-button {
+  background-color: #ffc107; /* Yellow */
+  color: #212529;
+}
+.clientes-table .edit-button:hover {
+  background-color: #e0a800;
+}
+.clientes-table .edit-button:disabled {
+  background-color: #ccc;
+}
+
+.clientes-table .delete-button {
+  background-color: #dc3545; /* Red */
+  color: white;
+}
+.clientes-table .delete-button:hover {
+  background-color: #c82333;
+}
+.clientes-table .delete-button:disabled {
+  background-color: #ccc;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  color: #333; /* Text color for modal content */
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.modal-content .form-group {
+  margin-bottom: 15px;
+}
+
+.modal-content .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.modal-content .form-group input[type="text"],
+.modal-content .form-group input[type="email"],
+.modal-content .form-group input[type="tel"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #fff; /* Ensure input fields are light */
+  color: #333; /* Ensure text in input is visible */
+}
+.modal-content .form-group input::placeholder {
+  color: #aaa;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions .submit-button {
+  background-color: #007bff;
+  color: white;
+}
+.modal-actions .submit-button:hover {
+  background-color: #0056b3;
+}
+.modal-actions .submit-button:disabled {
+  background-color: #ccc;
+}
+
+.modal-actions .cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+.modal-actions .cancel-button:hover {
+  background-color: #5a6268;
+}
+.modal-actions .cancel-button:disabled {
+  background-color: #ccc;
+}
+
+.dark-bg {
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+}
+
+.manage-clientes-container {
+  padding: 20px;
+  /* .dark-bg class from App.css is applied in JSX, providing base dark theme */
+}
+
+.management-section-title {
+  margin-bottom: 20px;
+  color: #e0e0e0; /* Lighter text for title in dark mode */
+  border-bottom: 1px solid #444; /* Darker border */
+  padding-bottom: 10px;
+}
+
+.add-cliente-button {
+  background-color: #28a745; /* Green, generally okay on dark backgrounds */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 1em;
+}
+.add-cliente-button:hover {
+  background-color: #218838;
+}
+.add-cliente-button:disabled {
+  background-color: #555; /* Darker disabled background */
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+.loading-message {
+  color: #87cefa; /* Light blue for loading text */
+}
+.error-message {
+  color: #f8d7da; /* Light red for error text */
+  background-color: #721c24; /* Dark red background */
+  border: 1px solid #f5c6cb;
+}
+.form-error-message {
+  color: #f8d7da;
+  background-color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+.clientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Shadow might be less visible on dark, but fine */
+  border: 1px solid #444; /* Darker border for the table itself */
+}
+
+.clientes-table th,
+.clientes-table td {
+  border: 1px solid #444; /* Darker cell borders */
+  text-align: left;
+  vertical-align: middle;
+  color: #dadada; /* Light gray text for table cells */
+}
+
+.clientes-table th {
+  background-color: #333; /* Darker header background */
+  color: #f0f0f0; /* Lighter text for headers */
+  font-weight: bold;
+}
+
+.clientes-table tr {
+  background-color: #2c2c2c; /* Dark background for rows */
+}
+
+.clientes-table tr:nth-child(even) {
+  background-color: #252525; /* Slightly different dark for even rows */
+}
+
+.clientes-table tr:hover {
+  background-color: #3f3f3f; /* Hover effect for rows */
+}
+
+.clientes-table .edit-button {
+  background-color: #ffc107;
+  color: #212529;
+}
+.clientes-table .edit-button:hover {
+  background-color: #e0a800;
+}
+.clientes-table .edit-button:disabled {
+  background-color: #555;
+  color: #aaa;
+}
+
+.clientes-table .delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+.clientes-table .delete-button:hover {
+  background-color: #c82333;
+}
+.clientes-table .delete-button:disabled {
+  background-color: #555;
+  color: #aaa;
+}
+
+/* Modal Styles for Dark Mode */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* Slightly darker backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #333; /* Dark background for modal */
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 500px;
+  color: #e0e0e0; /* Light text for modal content */
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #f0f0f0; /* Lighter title text */
+  text-align: center;
+}
+
+.modal-content .form-group {
+  margin-bottom: 15px;
+}
+
+.modal-content .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #b0b0b0; /* Slightly dimmer light color for labels */
+}
+
+.modal-content .form-group input[type="text"],
+.modal-content .form-group input[type="email"],
+.modal-content .form-group input[type="tel"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #555; /* Darker border for inputs */
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #444; /* Dark background for inputs */
+  color: #e0e0e0; /* Light text in inputs */
+}
+.modal-content .form-group input::placeholder {
+  color: #888; /* Dimmer placeholder text */
+}
+.modal-content .form-group input:focus {
+  border-color: #007bff; /* Keep focus color or choose a light one */
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Optional focus shadow */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Modal action buttons - assuming these are fine as they are global button styles or specific */
+.modal-actions .submit-button {
+  background-color: #007bff;
+  color: white;
+}
+.modal-actions .submit-button:hover {
+  background-color: #0056b3;
+}
+.modal-actions .submit-button:disabled {
+  background-color: #555;
+  color: #aaa;
+}
+
+.modal-actions .cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+.modal-actions .cancel-button:hover {
+  background-color: #5a6268;
+}
+.modal-actions .cancel-button:disabled {
+  background-color: #555;
+  color: #aaa;
 }
