@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useGetProductos from "../hooks/useGetProductos";
-import useVender from "../hooks/useVender";
+import useGestionarVenta from "../hooks/useGestionarVenta";
+import { useAuth } from "../contexts/AuthContext";
 import { createSvg } from "../utils/createSvg";
-
 const Vender = () => {
+  const { currentUser } = useAuth();
   const {
     products,
     loading: productsLoading,
@@ -11,107 +12,324 @@ const Vender = () => {
     refetch: refetchProductsList,
   } = useGetProductos();
 
-  const { venderProducto, vending, vendingError } = useVender();
+  const {
+    cartItems,
+    totalAmount,
+    clientes,
+    loadingClientes,
 
-  const handleSell = async (product) => {
-    if (!product.stockItemId || product.tamano === undefined) {
-      console.error("Product data is incomplete for vending:", product);
-      alert("Cannot sell product: faltan datos (stockItemId or tamano).");
-      return;
-    }
+    addToCart,
+    removeFromCart,
+    updateCartItemQuantity,
+    finalizarVenta,
+    processingSale,
+    saleError,
+    saleSuccess,
+    clearCart,
+  } = useGestionarVenta();
 
-    console.log(
-      `Attempting to sell stock item ID: ${product.stockItemId}, Tamano: ${product.tamano}ml`
-    );
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [selectedClienteId, setSelectedClienteId] = useState("");
+  const [metodoPago, setMetodoPago] = useState("efectivo");
+  const [notasCliente, setNotasCliente] = useState("");
+  const [direccionEntrega, setDireccionEntrega] = useState("");
 
-    const success = await venderProducto(product.stockItemId, product.tamano);
-
-    if (success) {
-      console.log("Sale successful, refetching products list...");
-      refetchProductsList();
-    } else {
-      console.log(
-        "Sale failed. Error should be displayed from useVender hook."
+  useEffect(() => {
+    if (currentUser.role === "cliente" && currentUser.clientId) {
+      setSelectedClienteId(currentUser.clientId.toString());
+      const currentClientDetails = clientes.find(
+        (c) => c.id.toString() === currentUser.clientId.toString()
       );
+      if (currentClientDetails) {
+        setDireccionEntrega(currentClientDetails.direccion || "");
+      }
+    } else if (
+      clientes.length === 1 &&
+      (currentUser.role === "admin" || currentUser.role === "empleado")
+    ) {
+      setSelectedClienteId(clientes[0].id.toString());
+      setDireccionEntrega(clientes[0].direccion || "");
+    }
+  }, [currentUser, clientes]);
+
+  useEffect(() => {
+    if (currentUser.role === "admin" || currentUser.role === "empleado") {
+      const client = clientes.find(
+        (c) => c.id.toString() === selectedClienteId
+      );
+      setDireccionEntrega(client ? client.direccion || "" : "");
+    }
+  }, [selectedClienteId, clientes, currentUser.role]);
+
+  const handleQuantityChange = (productId, tamano, value) => {
+    const key = `${productId}-${tamano}`;
+    setItemQuantities((prev) => ({ ...prev, [key]: parseInt(value, 10) || 1 }));
+  };
+
+  const handleAddToCartClick = (product) => {
+    const key = `${product.id}-${product.tamano}`;
+    const quantity = itemQuantities[key] || 1;
+    addToCart(product, quantity);
+    setItemQuantities((prev) => ({ ...prev, [key]: 1 }));
+  };
+
+  const handleFinalizarVentaClick = async () => {
+    const saleDetails = {
+      selectedClienteId: selectedClienteId,
+      metodoPago,
+      notasCliente,
+      direccionEntrega,
+    };
+    const success = await finalizarVenta(saleDetails);
+    if (success) {
+      refetchProductsList();
+
+      if (currentUser.role !== "cliente") setSelectedClienteId("");
+      setMetodoPago("efectivo");
+      setNotasCliente("");
+      setDireccionEntrega("");
     }
   };
 
-  if (productsLoading) {
-    return <p>Loading products...</p>;
-  }
+  const handleUpdateCartQuantity = (cartId, newQuantityStr) => {
+    const newQuantity = parseInt(newQuantityStr, 10);
+    if (isNaN(newQuantity)) return;
+    updateCartItemQuantity(cartId, newQuantity);
+  };
 
-  if (productsError) {
-    return <p>Error loading products: {productsError}</p>;
-  }
+  if (productsLoading)
+    return <p className="vender-loading-message">Cargando productos...</p>;
+  if (productsError)
+    return (
+      <p className="vender-error-message">
+        Error al cargar productos: {productsError}
+      </p>
+    );
 
   return (
-    <div className="vender-container">
-      <h2 className="vender-title">Vender Productos</h2>
+    <div className="vender-page-container dark-bg">
+      <div className="vender-products-section">
+        <h2 className="vender-section-title">Productos Disponibles</h2>
+        {products.length === 0 ? (
+          <p>No hay productos disponibles.</p>
+        ) : (
+          <ul className="vender-product-list">
+            {products.map((product) => {
+              const key = `${product.id}-${product.tamano}`;
+              return (
+                <li key={key} className="vender-product-item">
+                  <h3 className="vender-product-name">{product.nombre}</h3>
+                  <img
+                    className="vender-product-image"
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                      createSvg(product.tamano, product.color)
+                    )}`}
+                    alt={product.nombre}
+                  />
+                  <p>Precio: ${product.precio.toFixed(2)}</p>
+                  <p>
+                    Stock:{" "}
+                    <span
+                      style={{
+                        color: product.stock > 0 ? "lightgreen" : "orange",
+                      }}
+                    >
+                      {product.stock}
+                    </span>
+                  </p>
+                  <div className="vender-product-actions">
+                    <input
+                      type="number"
+                      className="vender-quantity-input"
+                      min="1"
+                      max={product.stock}
+                      value={itemQuantities[key] || 1}
+                      onChange={(e) =>
+                        handleQuantityChange(
+                          product.id,
+                          product.tamano,
+                          e.target.value
+                        )
+                      }
+                      disabled={product.stock <= 0 || processingSale}
+                    />
+                    <button
+                      className="vender-add-to-cart-button"
+                      onClick={() => handleAddToCartClick(product)}
+                      disabled={product.stock <= 0 || processingSale}
+                    >
+                      Agregar al Carrito
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
-      {vending && (
-        <p className="vender-processing-message">Processing sale...</p>
-      )}
-      {vendingError && (
-        <p className="vender-error-message">Vending Error: {vendingError}</p>
-      )}
+      <div className="vender-cart-section">
+        <h2 className="vender-section-title">Carrito de Compras</h2>
+        {cartItems.length === 0 ? (
+          <p>El carrito está vacío.</p>
+        ) : (
+          <>
+            <table className="vender-cart-table clientes-table">
+              {" "}
+              {/* Reusing clientes-table style */}
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unit.</th>
+                  <th>Subtotal</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr key={item.cartId}>
+                    <td>{item.nombre}</td>
+                    <td>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleUpdateCartQuantity(item.cartId, e.target.value)
+                        }
+                        min="1"
+                        max={item.availableStock}
+                        className="vender-cart-quantity-input"
+                        disabled={processingSale}
+                      />
+                    </td>
+                    <td>${item.unitPrice.toFixed(2)}</td>
+                    <td>${item.subtotal.toFixed(2)}</td>
+                    <td>
+                      <button
+                        className="vender-remove-button delete-button"
+                        onClick={() => removeFromCart(item.cartId)}
+                        disabled={processingSale}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="vender-cart-total">
+              <h3>Total: ${totalAmount.toFixed(2)}</h3>
+            </div>
+            <button
+              onClick={clearCart}
+              className="vender-clear-cart-button"
+              disabled={processingSale}
+            >
+              Vaciar Carrito
+            </button>
+          </>
+        )}
 
-      {products.length === 0 && !productsLoading && (
-        <p className="vender-no-products-message">
-          No products available to sell.
-        </p>
-      )}
-
-      <ul className="vender-product-list">
-        {products.map((product) => (
-          <li
-            key={`${product.id}-${product.tamano}`}
-            className="vender-product-item"
-          >
-            <h3 className="vender-product-name">{product.nombre}</h3>
-            <div className="vender-product-color-section">
-              <img
-                className="item-icon"
-                src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                  createSvg(product.tamano, product.color)
-                )}`}
+        {cartItems.length > 0 && (
+          <div className="vender-checkout-form">
+            <h3 className="vender-section-subtitle">Detalles de la Venta</h3>
+            {(currentUser.role === "admin" ||
+              currentUser.role === "empleado") && (
+              <div className="form-group">
+                <label htmlFor="clienteSelect">Seleccionar Cliente:</label>
+                {loadingClientes ? (
+                  <p>Cargando clientes...</p>
+                ) : (
+                  <select
+                    id="clienteSelect"
+                    value={selectedClienteId}
+                    onChange={(e) => setSelectedClienteId(e.target.value)}
+                    disabled={processingSale}
+                    required
+                  >
+                    <option value="">-- Seleccione un Cliente --</option>
+                    {clientes.map((cliente) => (
+                      <option key={cliente.id} value={cliente.id}>
+                        {cliente.nombreCompleto} ({cliente.email})
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
+            <div className="form-group">
+              <label htmlFor="direccionEntrega">Dirección de Entrega:</label>
+              <input
+                type="text"
+                id="direccionEntrega"
+                value={direccionEntrega}
+                onChange={(e) => setDireccionEntrega(e.target.value)}
+                disabled={
+                  processingSale ||
+                  currentUser.role === "admin" ||
+                  currentUser.role === "empleado"
+                }
+                required
               />
             </div>
-            <p className="vender-product-detail">
-              Precio: <strong>${product.precio.toFixed(2)}</strong>
-            </p>
-            <p className="vender-product-detail">
-              Stock Actual:{" "}
-              <strong
-                style={{ color: product.stock > 0 ? "green" : "orange" }}
-                className="vender-product-stock"
+            <div className="form-group">
+              <label htmlFor="metodoPago">Método de Pago:</label>
+              <select
+                id="metodoPago"
+                value={metodoPago}
+                onChange={(e) => setMetodoPago(e.target.value)}
+                disabled={processingSale}
+                required
               >
-                {" "}
-                {/* Dynamic style */}
-                {product.stock}
-              </strong>
-            </p>
-            <p className="vender-product-ids">
-              (Savor ID: {product.id}, Tamano: {product.tamano}ml, Stock Item
-              ID: {product.stockItemId})
-            </p>
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="mercadopago">MercadoPago</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="notasCliente">Notas Adicionales:</label>
+              <textarea
+                id="notasCliente"
+                value={notasCliente}
+                onChange={(e) => setNotasCliente(e.target.value)}
+                rows="3"
+                disabled={processingSale}
+              ></textarea>
+            </div>
+
+            {saleError && (
+              <p
+                className="vender-error-message"
+                style={{ textAlign: "center" }}
+              >
+                {saleError}
+              </p>
+            )}
+            {saleSuccess && (
+              <p
+                className="vender-success-message"
+                style={{ color: "green", textAlign: "center" }}
+              >
+                ¡Venta realizada con éxito!
+              </p>
+            )}
+
             <button
-              onClick={() => handleSell(product)}
-              disabled={vending || product.stock <= 0}
-              className={`vender-sell-button ${
-                vending || product.stock <= 0
-                  ? "vender-sell-button-disabled"
-                  : "vender-sell-button-enabled"
-              }`}
+              className="vender-finalize-button submit-button"
+              onClick={handleFinalizarVentaClick}
+              disabled={
+                processingSale ||
+                cartItems.length === 0 ||
+                (!selectedClienteId && currentUser.role !== "cliente")
+              }
             >
-              {product.stock <= 0
-                ? "Out of Stock"
-                : vending
-                ? "Processing..."
-                : "Vender"}
+              {processingSale ? "Procesando Venta..." : "Finalizar Venta"}
             </button>
-          </li>
-        ))}
-      </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
