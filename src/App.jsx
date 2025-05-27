@@ -19,6 +19,7 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
+import Home from "./components/Home";
 
 import Manage from "./components/manage/Manage";
 import ManageClientes from "./components/manage/ManageClientes";
@@ -41,7 +42,7 @@ const App = () => {
       <div id="root-content">
         <Routes>
           <Route path={LOGIN} element={<Login />} />
-          <Route path={HOME} element={<ProductDisplay />} />
+          <Route path={HOME} element={<Home />} />
           <Route path={PRODUCTOS} element={<ProductDisplay />} />
 
           <Route

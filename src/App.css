@@ -210,14 +210,14 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   text-align: left;
-  background-color: #fff; /* Added a default background for better contrast if needed */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Added a subtle shadow for depth */
+  background: #2a2929;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
 }
 
 .login-title {
   text-align: center; /* Assuming you might want the h2 centered */
   margin-bottom: 20px;
-  color: #333;
+  color: #ffffff;
 }
 
 .login-form-group {
@@ -228,7 +228,7 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
+  color: #ffffff;
 }
 
 .login-input {
@@ -778,4 +778,49 @@
 .modal-actions .cancel-button:disabled {
   background-color: #555;
   color: #aaa;
+}
+
+.home-container {
+  max-width: 600px;
+  margin: 60px auto 0 auto;
+  padding: 40px 24px;
+  background: #2a2929;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 2.7rem;
+  font-weight: bold;
+  color: #00e6ff;
+  margin-bottom: 10px;
+}
+
+.home-subtitle {
+  color: #dadada;
+  font-size: 1.2rem;
+  margin-bottom: 32px;
+}
+
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.home-action-btn {
+  background: #007bff;
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.home-action-btn:hover {
+  background: #005fa3;
 }
