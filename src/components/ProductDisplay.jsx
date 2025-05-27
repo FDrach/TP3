@@ -1,12 +1,13 @@
 import React from "react";
 import useGetProductos from "../hooks/useGetProductos";
+import { createSvg } from "../utils/createSvg";
 
 function ProductDisplay() {
   const { products, loading, error } = useGetProductos();
 
-  console.log(products);
-  console.log(loading);
-  console.log(error);
+  // console.log(products);
+  // console.log(loading);
+  // console.log(error);
 
   if (loading) {
     return <p>Cargando...</p>;
@@ -25,24 +26,19 @@ function ProductDisplay() {
       <h1>Product List</h1>
       <main className="product-list">
         {products.map((product) => (
-          
           <div key={`${product.id}-${product.tamano}`} className="product-card">
             <h2>{product.nombre}</h2>
             <p>
-              Color: { "  " }
-              <span
-                className="vender-product-color-swatch"
-                style={{ backgroundColor: product.color }}
-                title={`Color: ${product.color}`}
+              <img
+                className="item-icon"
+                src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                  createSvg(product.tamano, product.color)
+                )}`}
               />
             </p>
             <p>Precio: ${product.precio.toFixed(2)}</p>
             <p>Stock: {product.stock} units</p>
             <p>Tamaño: {product.tamano}ml</p>
-            <p>
-              <small>(ID: {product.id})</small>
-            </p>
-
           </div>
         ))}
       </main>

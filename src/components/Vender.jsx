@@ -1,6 +1,7 @@
 import React from "react";
 import useGetProductos from "../hooks/useGetProductos";
 import useVender from "../hooks/useVender";
+import { createSvg } from "../utils/createSvg";
 
 const Vender = () => {
   const {
@@ -68,12 +69,12 @@ const Vender = () => {
           >
             <h3 className="vender-product-name">{product.nombre}</h3>
             <div className="vender-product-color-section">
-              Color:
-              <span
-                className="vender-product-color-swatch"
-                style={{ backgroundColor: product.color }}
-                title={`Color: ${product.color}`}
-              ></span>
+              <img
+                className="item-icon"
+                src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                  createSvg(product.tamano, product.color)
+                )}`}
+              />
             </div>
             <p className="vender-product-detail">
               Precio: <strong>${product.precio.toFixed(2)}</strong>

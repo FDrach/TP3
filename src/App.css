@@ -52,12 +52,11 @@
   justify-items: center; /* Centra las cards en cada columna */
 }
 
-
 .product-card {
   width: 200px;
   min-height: 260px;
   background: #2a2929;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   padding: 14px;
   margin: 0;
@@ -66,13 +65,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;    /* Centra el texto */      /* O center si quieres centrar el contenido dentro de la card */
+  text-align: center; /* Centra el texto */ /* O center si quieres centrar el contenido dentro de la card */
 }
-.p{
-
+.p {
   color: #ffffff;
   font-size: 0px;
-
 }
 
 /* Styles for Vender.jsx component */
@@ -102,11 +99,10 @@
 
 .vender-product-item,
 .product-card {
-  
   margin: 10px 0;
   padding: 15px;
   background: #2a2929;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
 }
 
@@ -118,10 +114,10 @@
 }
 
 .vender-product-color-section {
-   display: flex;
-  flex-direction: row;     
-  align-items: center;      
-  justify-content: center;  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8px;
   font-size: 1.1em;
 }
@@ -216,11 +212,11 @@
   max-width: 400px;
   margin: 50px auto;
   padding: 20px;
-  
+
   border-radius: 5px;
   text-align: left;
   background: #2a2929;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .login-title {
@@ -245,7 +241,7 @@
   padding: 10px;
   box-sizing: border-box;
   border-radius: 4px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .login-error-message {
@@ -794,7 +790,7 @@
   margin: 60px auto 0 auto;
   padding: 40px 24px;
   background: #2a2929;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   text-align: center;
 }
@@ -828,8 +824,17 @@
   font-weight: bold;
   text-decoration: none;
   transition: background 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 .home-action-btn:hover {
   background: #005fa3;
+}
+
+.product-card {
+  height: 100%;
+  width: 100%;
+  align-self: start;
+}
+.item-icon {
+  height: 5rem;
 }
