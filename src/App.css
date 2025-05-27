@@ -44,17 +44,28 @@
 
 .product-list,
 .vender-product-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 4rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+  gap: 18px;
+  margin-top: 3rem;
+  padding: 0;
+  justify-items: center; /* Centra las cards en cada columna */
 }
 
+
 .product-card {
+  width: 200px;
+  min-height: 260px;
   border-style: solid;
   border-width: 1px;
-  padding: 10px;
-  margin: 10px;
+  padding: 14px;
+  margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;    /* Centra el contenido horizontalmente */
+  text-align: center;     /* Centra el texto */      /* O center si quieres centrar el contenido dentro de la card */
 }
 
 /* Styles for Vender.jsx component */
@@ -92,20 +103,24 @@
 
 .vender-product-name {
   margin-top: 0;
-  color: #333;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
 }
 
 .vender-product-color-section {
-  display: flex;
-  align-items: center;
+   display: flex;
+  flex-direction: row;     
+  align-items: center;      
+  justify-content: center;  
   margin-bottom: 8px;
+  font-size: 1.1em;
 }
 
 .vender-product-color-swatch {
   display: inline-block;
   width: 20px;
   height: 20px;
-  /* backgroundColor is dynamic, so it's better to keep it inline or handle via CSS variables if many fixed colors */
   border: 1px solid #777;
   margin-left: 8px;
   border-radius: 3px;
@@ -140,9 +155,6 @@
   cursor: not-allowed;
 }
 
-/* ... (existing styles from App.css) ... */
-
-/* Navbar Styles */
 .navbar {
   background: #333;
   padding: 1rem 2rem;

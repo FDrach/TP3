@@ -25,15 +25,16 @@ function ProductDisplay() {
       <h1>Product List</h1>
       <main className="product-list">
         {products.map((product) => (
+          
           <div key={`${product.id}-${product.tamano}`} className="product-card">
             <h2>{product.nombre}</h2>
             <p>
-              Color:{" "}
+              Color: { "  " }
               <span
-                style={{ backgroundColor: product.color, padding: "0 5px" }}
-              >
-                {product.color}
-              </span>
+                className="vender-product-color-swatch"
+                style={{ backgroundColor: product.color }}
+                title={`Color: ${product.color}`}
+              />
             </p>
             <p>Precio: ${product.precio.toFixed(2)}</p>
             <p>Stock: {product.stock} units</p>
@@ -41,6 +42,7 @@ function ProductDisplay() {
             <p>
               <small>(ID: {product.id})</small>
             </p>
+
           </div>
         ))}
       </main>
