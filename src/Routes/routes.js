@@ -10,3 +10,4 @@ export const MANAGE_CLIENTES = "/manage/clientes";
 export const MANAGE_SAVORES = "/manage/sabores";
 export const MANAGE_STOCK = "/manage/stock";
 export const MANAGE_PRECIOS = "/manage/precios";
+export const MANAGE_VENTAS = "/manage/ventas";

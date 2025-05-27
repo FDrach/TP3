@@ -5,12 +5,12 @@ import {
   MANAGE_SAVORES,
   MANAGE_STOCK,
   MANAGE_PRECIOS,
-  MANAGE
+  MANAGE_VENTAS,
+  MANAGE,
 } from "../../Routes/routes";
 
 const Manage = () => {
   const location = useLocation();
-
   const isManageHome = location.pathname === MANAGE;
 
   return (
@@ -29,6 +29,9 @@ const Manage = () => {
         </Link>
         <Link to={MANAGE_PRECIOS} className="manage-nav-link">
           Gestionar Precios
+        </Link>
+        <Link to={MANAGE_VENTAS} className="manage-nav-link">
+          Historial de Ventas
         </Link>
       </nav>
 

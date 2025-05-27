@@ -11,6 +11,7 @@ import {
   MANAGE_SAVORES,
   MANAGE_STOCK,
   MANAGE_PRECIOS,
+  MANAGE_VENTAS,
 } from "./Routes/routes";
 import ProductDisplay from "./components/ProductDisplay";
 import Vender from "./components/Vender";
@@ -26,6 +27,7 @@ import ManageClientes from "./components/manage/ManageClientes";
 import ManageSavores from "./components/manage/ManageSavores";
 import ManageStock from "./components/manage/ManageStock";
 import ManagePrecios from "./components/manage/ManagePrecios";
+import ManageVentas from "./components/manage/ManageVentas";
 
 import "./App.css";
 
@@ -48,7 +50,9 @@ const App = () => {
           <Route
             path={VENDER}
             element={
-              <ProtectedRoute allowedRoles={[ROLES.EMPLEADO, ROLES.ADMIN, ROLES.CLIENTE]}>
+              <ProtectedRoute
+                allowedRoles={[ROLES.EMPLEADO, ROLES.ADMIN, ROLES.CLIENTE]}
+              >
                 <Vender />
               </ProtectedRoute>
             }
@@ -66,6 +70,7 @@ const App = () => {
             <Route path={MANAGE_SAVORES} element={<ManageSavores />} />
             <Route path={MANAGE_STOCK} element={<ManageStock />} />
             <Route path={MANAGE_PRECIOS} element={<ManagePrecios />} />
+            <Route path={MANAGE_VENTAS} element={<ManageVentas />} />
           </Route>
 
           <Route path={UNAUTHORIZED} element={<Unauthorized />} />

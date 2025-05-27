@@ -1067,3 +1067,40 @@
   background-color: #555 !important;
   cursor: not-allowed;
 }
+
+/*#########*/
+
+/* Add to App.css or your global stylesheet */
+
+/* For the "Ver Items" button in ManageVentas if you don't want to reuse "edit-button" directly or need specific styling */
+.view-details-button {
+  background-color: #17a2b8; /* Example: info color */
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+.view-details-button:hover {
+  background-color: #138496;
+}
+.view-details-button:disabled {
+  background-color: #555;
+  color: #aaa;
+}
+
+/* Wider modal for item details in ManageVentas */
+.modal-content-wide {
+  max-width: 700px !important; /* Or use a class instead of inline style */
+}
+
+/* Smaller font for tables inside modals, if needed */
+.modal-content .clientes-table {
+  font-size: 0.9em;
+  margin-top: 10px; /* Add some spacing */
+}
+.modal-content .clientes-table th,
+.modal-content .clientes-table td {
+  padding: 6px 8px; /* Adjust padding for inner table */
+}

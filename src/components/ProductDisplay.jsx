@@ -5,10 +5,6 @@ import { createSvg } from "../utils/createSvg";
 function ProductDisplay() {
   const { products, loading, error } = useGetProductos();
 
-  // console.log(products);
-  // console.log(loading);
-  // console.log(error);
-
   if (loading) {
     return <p>Cargando...</p>;
   }
