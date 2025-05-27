@@ -147,7 +147,7 @@ const useGestionarVenta = () => {
           ? currentUser.id
           : null,
       fechaPedido: new Date().toISOString(),
-      estado: "completado",
+      estado: "pendiente",
       items: cartItems.map((item) => ({
         savorId: item.savorId,
         tamano: item.tamano,

@@ -7,9 +7,10 @@ const useManageVentas = () => {
   const [ventas, setVentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionInProgress, setActionInProgress] = useState(false);
 
   const fetchVentasData = useCallback(async () => {
-    setLoading(true);
+    if (!actionInProgress) setLoading(true);
     setError(null);
     try {
       const [ventasResponse, clientesResponse, usuariosResponse] =
@@ -54,19 +55,40 @@ const useManageVentas = () => {
       console.error("Error fetching ventas data:", err);
       setError(err.message || "Error al cargar el historial de ventas.");
     } finally {
-      setLoading(false);
+      if (!actionInProgress) setLoading(false);
     }
-  }, []);
+  }, [actionInProgress]);
 
   useEffect(() => {
     fetchVentasData();
   }, [fetchVentasData]);
 
+  const updateVentaStatus = async (ventaId, newStatus) => {
+    setActionInProgress(true);
+    setError(null);
+    try {
+      await axios.patch(`${API_BASE_URL}/ventas/${ventaId}`, {
+        estado: newStatus,
+      });
+      await fetchVentasData();
+      return true;
+    } catch (err) {
+      console.error(`Error updating status for venta ${ventaId}:`, err);
+      setError(err.message || "Error al actualizar el estado de la venta.");
+      setActionInProgress(false);
+      throw err;
+    } finally {
+      setActionInProgress(false);
+    }
+  };
+
   return {
     ventas,
     loading,
     error,
+    actionInProgress,
     fetchVentasData,
+    updateVentaStatus,
   };
 };
 
