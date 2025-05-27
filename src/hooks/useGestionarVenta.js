@@ -9,34 +9,40 @@ const useGestionarVenta = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [clientes, setClientes] = useState([]);
+  const [currentClienteDetalles, setCurrentClienteDetalles] = useState(null);
   const [loadingClientes, setLoadingClientes] = useState(false);
   const [errorClientes, setErrorClientes] = useState(null);
   const [processingSale, setProcessingSale] = useState(false);
   const [saleError, setSaleError] = useState(null);
   const [saleSuccess, setSaleSuccess] = useState(false);
 
-  const fetchClientes = useCallback(async () => {
-    if (
-      currentUser &&
-      (currentUser.role === "admin" || currentUser.role === "empleado")
-    ) {
-      setLoadingClientes(true);
-      setErrorClientes(null);
-      try {
+  const fetchClientData = useCallback(async () => {
+    if (!currentUser) return;
+    setLoadingClientes(true);
+    setErrorClientes(null);
+    try {
+      if (currentUser.role === "admin" || currentUser.role === "empleado") {
         const response = await axios.get(`${API_BASE_URL}/clientes`);
         setClientes(response.data);
-      } catch (err) {
-        console.error("Error fetching clientes:", err);
-        setErrorClientes("Error al cargar lista de clientes.");
-      } finally {
-        setLoadingClientes(false);
+        setCurrentClienteDetalles(null);
+      } else if (currentUser.role === "cliente" && currentUser.clientId) {
+        const response = await axios.get(
+          `${API_BASE_URL}/clientes/${currentUser.clientId}`
+        );
+        setCurrentClienteDetalles(response.data);
+        setClientes([]);
       }
+    } catch (err) {
+      console.error("Error fetching client data:", err);
+      setErrorClientes("Error al cargar datos del cliente.");
+    } finally {
+      setLoadingClientes(false);
     }
   }, [currentUser]);
 
   useEffect(() => {
-    fetchClientes();
-  }, [fetchClientes]);
+    fetchClientData();
+  }, [fetchClientData]);
 
   useEffect(() => {
     const newTotal = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
@@ -156,22 +162,12 @@ const useGestionarVenta = () => {
       notasCliente: saleDetails.notasCliente,
     };
 
-    if (
-      !saleObj.clienteId &&
-      (currentUser.role === "admin" || currentUser.role === "empleado")
-    ) {
-      setSaleError("Por favor, seleccione un cliente para la venta.");
-      setProcessingSale(false);
-      return false;
-    }
-    if (
-      !saleObj.clienteId &&
-      currentUser.role === "cliente" &&
-      !currentUser.clientId
-    ) {
-      setSaleError(
-        "Información de cliente no encontrada para el usuario actual."
-      );
+    if (!saleObj.clienteId) {
+      const errorMsg =
+        currentUser.role === "admin" || currentUser.role === "empleado"
+          ? "Por favor, seleccione un cliente para la venta."
+          : "Información de cliente no encontrada para el usuario actual.";
+      setSaleError(errorMsg);
       setProcessingSale(false);
       return false;
     }
@@ -182,7 +178,6 @@ const useGestionarVenta = () => {
           `${API_BASE_URL}/stock/${item.stockItemId}`
         );
         const currentStockItem = stockItemResponse.data;
-
         const tamanoStr = item.tamano.toString();
         if (
           !currentStockItem.cantidad ||
@@ -190,16 +185,13 @@ const useGestionarVenta = () => {
           currentStockItem.cantidad[tamanoStr] < item.quantity
         ) {
           throw new Error(
-            `Stock insuficiente para ${item.nombre} (Tamaño: ${
-              item.tamano
-            }ml). Disponible: ${
+            `Stock insuficiente para ${item.nombre}. Disponible: ${
               currentStockItem.cantidad
                 ? currentStockItem.cantidad[tamanoStr]
                 : 0
             }, Pedido: ${item.quantity}`
           );
         }
-
         const updatedStockData = {
           ...currentStockItem,
           cantidad: {
@@ -220,7 +212,6 @@ const useGestionarVenta = () => {
       return true;
     } catch (error) {
       console.error("Error during sale finalization:", error);
-
       setSaleError(
         error.message ||
           "Error al procesar la venta. Verifique el stock e intente de nuevo."
@@ -239,6 +230,7 @@ const useGestionarVenta = () => {
     cartItems,
     totalAmount,
     clientes,
+    currentClienteDetalles,
     loadingClientes,
     errorClientes,
     addToCart,
@@ -249,7 +241,7 @@ const useGestionarVenta = () => {
     saleError,
     saleSuccess,
     clearCart,
-    fetchClientes,
+    fetchClientData,
   };
 };
 

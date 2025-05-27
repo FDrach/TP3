@@ -3,6 +3,7 @@ import useGetProductos from "../hooks/useGetProductos";
 import useGestionarVenta from "../hooks/useGestionarVenta";
 import { useAuth } from "../contexts/AuthContext";
 import { createSvg } from "../utils/createSvg";
+
 const Vender = () => {
   const { currentUser } = useAuth();
   const {
@@ -16,6 +17,7 @@ const Vender = () => {
     cartItems,
     totalAmount,
     clientes,
+    currentClienteDetalles,
     loadingClientes,
 
     addToCart,
@@ -37,29 +39,32 @@ const Vender = () => {
   useEffect(() => {
     if (currentUser.role === "cliente" && currentUser.clientId) {
       setSelectedClienteId(currentUser.clientId.toString());
-      const currentClientDetails = clientes.find(
-        (c) => c.id.toString() === currentUser.clientId.toString()
-      );
-      if (currentClientDetails) {
-        setDireccionEntrega(currentClientDetails.direccion || "");
-      }
     } else if (
       clientes.length === 1 &&
       (currentUser.role === "admin" || currentUser.role === "empleado")
     ) {
       setSelectedClienteId(clientes[0].id.toString());
-      setDireccionEntrega(clientes[0].direccion || "");
     }
   }, [currentUser, clientes]);
 
   useEffect(() => {
-    if (currentUser.role === "admin" || currentUser.role === "empleado") {
+    if (currentUser.role === "cliente" && currentClienteDetalles) {
+      setDireccionEntrega(currentClienteDetalles.direccion || "");
+    } else if (
+      (currentUser.role === "admin" || currentUser.role === "empleado") &&
+      selectedClienteId
+    ) {
       const client = clientes.find(
         (c) => c.id.toString() === selectedClienteId
       );
       setDireccionEntrega(client ? client.direccion || "" : "");
+    } else if (
+      (currentUser.role === "admin" || currentUser.role === "empleado") &&
+      !selectedClienteId
+    ) {
+      setDireccionEntrega("");
     }
-  }, [selectedClienteId, clientes, currentUser.role]);
+  }, [selectedClienteId, clientes, currentUser.role, currentClienteDetalles]);
 
   const handleQuantityChange = (productId, tamano, value) => {
     const key = `${productId}-${tamano}`;
@@ -74,8 +79,13 @@ const Vender = () => {
   };
 
   const handleFinalizarVentaClick = async () => {
+    let finalSelectedClienteId = selectedClienteId;
+    if (currentUser.role === "cliente" && currentUser.clientId) {
+      finalSelectedClienteId = currentUser.clientId.toString();
+    }
+
     const saleDetails = {
-      selectedClienteId: selectedClienteId,
+      selectedClienteId: finalSelectedClienteId,
       metodoPago,
       notasCliente,
       direccionEntrega,
@@ -83,11 +93,11 @@ const Vender = () => {
     const success = await finalizarVenta(saleDetails);
     if (success) {
       refetchProductsList();
-
-      if (currentUser.role !== "cliente") setSelectedClienteId("");
+      if (currentUser.role !== "cliente") {
+        setSelectedClienteId("");
+      }
       setMetodoPago("efectivo");
       setNotasCliente("");
-      setDireccionEntrega("");
     }
   };
 
@@ -97,8 +107,14 @@ const Vender = () => {
     updateCartItemQuantity(cartId, newQuantity);
   };
 
-  if (productsLoading)
-    return <p className="vender-loading-message">Cargando productos...</p>;
+  if (
+    productsLoading ||
+    (loadingClientes &&
+      !currentClienteDetalles &&
+      currentUser.role === "cliente")
+  ) {
+    return <p className="vender-loading-message">Cargando datos...</p>;
+  }
   if (productsError)
     return (
       <p className="vender-error-message">
@@ -175,8 +191,6 @@ const Vender = () => {
         ) : (
           <>
             <table className="vender-cart-table clientes-table">
-              {" "}
-              {/* Reusing clientes-table style */}
               <thead>
                 <tr>
                   <th>Producto</th>
@@ -238,7 +252,7 @@ const Vender = () => {
               currentUser.role === "empleado") && (
               <div className="form-group">
                 <label htmlFor="clienteSelect">Seleccionar Cliente:</label>
-                {loadingClientes ? (
+                {loadingClientes && clientes.length === 0 ? (
                   <p>Cargando clientes...</p>
                 ) : (
                   <select
@@ -265,11 +279,11 @@ const Vender = () => {
                 id="direccionEntrega"
                 value={direccionEntrega}
                 onChange={(e) => setDireccionEntrega(e.target.value)}
-                disabled={
-                  processingSale ||
+                readOnly={
                   currentUser.role === "admin" ||
                   currentUser.role === "empleado"
                 }
+                disabled={processingSale}
                 required
               />
             </div>
@@ -322,7 +336,8 @@ const Vender = () => {
               disabled={
                 processingSale ||
                 cartItems.length === 0 ||
-                (!selectedClienteId && currentUser.role !== "cliente")
+                (!selectedClienteId &&
+                  !(currentUser.role === "cliente" && currentUser.clientId))
               }
             >
               {processingSale ? "Procesando Venta..." : "Finalizar Venta"}
