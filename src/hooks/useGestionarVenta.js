@@ -1,13 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
+import useAppStore from "../store/useAppStore";
 
 const API_BASE_URL = "http://localhost:3001";
 
 const useGestionarVenta = () => {
-  const { currentUser } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const currentUser = useAppStore((state) => state.currentUser);
+  const cartItems = useAppStore((state) => state.cartItems);
+  const totalAmount = useAppStore((state) => state.totalAmount);
+  const zustandAddToCart = useAppStore((state) => state.addToCart);
+  const zustandRemoveFromCart = useAppStore((state) => state.removeFromCart);
+  const zustandUpdateCartItemQuantity = useAppStore(
+    (state) => state.updateCartItemQuantity
+  );
+  const zustandClearCart = useAppStore((state) => state.clearCart);
+
   const [clientes, setClientes] = useState([]);
   const [currentClienteDetalles, setCurrentClienteDetalles] = useState(null);
   const [loadingClientes, setLoadingClientes] = useState(false);
@@ -44,88 +51,22 @@ const useGestionarVenta = () => {
     fetchClientData();
   }, [fetchClientData]);
 
-  useEffect(() => {
-    const newTotal = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
-    setTotalAmount(newTotal);
-  }, [cartItems]);
-
   const addToCart = (product, quantity) => {
-    if (quantity <= 0) return;
-    if (quantity > product.stock) {
+    const success = zustandAddToCart(product, quantity);
+    if (!success && product.stock > 0 && quantity <= product.stock) {
+      alert(
+        `No se pudo agregar la cantidad deseada de ${product.nombre}. Verifique el stock o la cantidad ya en el carrito.`
+      );
+    } else if (!success && quantity > product.stock) {
       alert(
         `No puede agregar más de ${product.stock} unidades de ${product.nombre}.`
       );
-      return;
     }
-
-    const cartItemId = `${product.id}-${product.tamano}`;
-    const existingItemIndex = cartItems.findIndex(
-      (item) => item.cartId === cartItemId
-    );
-
-    if (existingItemIndex > -1) {
-      const updatedCartItems = [...cartItems];
-      const newQuantity =
-        updatedCartItems[existingItemIndex].quantity + quantity;
-      if (newQuantity > product.stock) {
-        alert(
-          `No puede agregar más de ${product.stock} unidades de ${product.nombre} en total.`
-        );
-        return;
-      }
-      updatedCartItems[existingItemIndex].quantity = newQuantity;
-      updatedCartItems[existingItemIndex].subtotal =
-        newQuantity * product.precio;
-      setCartItems(updatedCartItems);
-    } else {
-      setCartItems((prevItems) => [
-        ...prevItems,
-        {
-          cartId: cartItemId,
-          savorId: product.id,
-          tamano: product.tamano,
-          stockItemId: product.stockItemId,
-          nombre: product.nombre,
-          color: product.color,
-          quantity: quantity,
-          unitPrice: product.precio,
-          subtotal: quantity * product.precio,
-          availableStock: product.stock,
-        },
-      ]);
+    if (success) {
+      setSaleSuccess(false);
+      setSaleError(null);
     }
-    setSaleSuccess(false);
-    setSaleError(null);
-  };
-
-  const removeFromCart = (cartIdToRemove) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.cartId !== cartIdToRemove)
-    );
-  };
-
-  const updateCartItemQuantity = (cartIdToUpdate, newQuantity) => {
-    const itemIndex = cartItems.findIndex(
-      (item) => item.cartId === cartIdToUpdate
-    );
-    if (itemIndex === -1) return;
-
-    const item = cartItems[itemIndex];
-    if (newQuantity <= 0) {
-      removeFromCart(cartIdToUpdate);
-      return;
-    }
-    if (newQuantity > item.availableStock) {
-      alert(
-        `No puede agregar más de ${item.availableStock} unidades de ${item.nombre}.`
-      );
-      return;
-    }
-
-    const updatedCartItems = [...cartItems];
-    updatedCartItems[itemIndex].quantity = newQuantity;
-    updatedCartItems[itemIndex].subtotal = newQuantity * item.unitPrice;
-    setCartItems(updatedCartItems);
+    return success;
   };
 
   const finalizarVenta = async (saleDetails) => {
@@ -207,7 +148,7 @@ const useGestionarVenta = () => {
 
       await axios.post(`${API_BASE_URL}/ventas`, saleObj);
       setSaleSuccess(true);
-      setCartItems([]);
+      zustandClearCart();
       setProcessingSale(false);
       return true;
     } catch (error) {
@@ -221,11 +162,6 @@ const useGestionarVenta = () => {
     }
   };
 
-  const clearCart = () => {
-    setCartItems([]);
-    setTotalAmount(0);
-  };
-
   return {
     cartItems,
     totalAmount,
@@ -234,13 +170,13 @@ const useGestionarVenta = () => {
     loadingClientes,
     errorClientes,
     addToCart,
-    removeFromCart,
-    updateCartItemQuantity,
+    removeFromCart: zustandRemoveFromCart,
+    updateCartItemQuantity: zustandUpdateCartItemQuantity,
     finalizarVenta,
     processingSale,
     saleError,
     saleSuccess,
-    clearCart,
+    clearCart: zustandClearCart,
     fetchClientData,
   };
 };

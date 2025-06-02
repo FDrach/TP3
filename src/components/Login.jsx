@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import useAppStore from "../store/useAppStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { HOME } from "../Routes/routes";
 
@@ -7,7 +7,8 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
+  const login = useAppStore((state) => state.login);
+  const isLoadingAuth = useAppStore((state) => state.isLoadingAuth);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,8 +60,8 @@ const Login = () => {
           />
         </div>
         {error && <p className="login-error-message">{error}</p>}
-        <button type="submit" disabled={isLoading} className="login-button">
-          {isLoading ? "Logging in..." : "Login"}
+        <button type="submit" disabled={isLoadingAuth}className="login-button">
+          {isLoadingAuth ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

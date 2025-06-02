@@ -1,13 +1,15 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import useAppStore from "../store/useAppStore";
 import { LOGIN, UNAUTHORIZED } from "../Routes/routes";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { currentUser, isLoading } = useAuth();
+  const currentUser = useAppStore((state) => state.currentUser);
+  const isLoadingAuth = useAppStore((state) => state.isLoadingAuth);
+
   const location = useLocation();
 
-  if (isLoading) {
+  if (isLoadingAuth) {
     return (
       <div className="protected-route-loading">
         Verificando autenticación...

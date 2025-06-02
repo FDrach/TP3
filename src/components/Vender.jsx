@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import useGetProductos from "../hooks/useGetProductos";
 import useGestionarVenta from "../hooks/useGestionarVenta";
-import { useAuth } from "../contexts/AuthContext";
+import useAppStore from "../store/useAppStore";
 import { createSvg } from "../utils/createSvg";
 
 const Vender = () => {
-  const { currentUser } = useAuth();
+  const currentUser = useAppStore((state) => state.currentUser);
   const {
     products,
     loading: productsLoading,
@@ -37,20 +37,22 @@ const Vender = () => {
   const [direccionEntrega, setDireccionEntrega] = useState("");
 
   useEffect(() => {
-    if (currentUser.role === "cliente" && currentUser.clientId) {
+    if (currentUser.role === "cliente" && currentUser.clientId && currentUser) {
       setSelectedClienteId(currentUser.clientId.toString());
     } else if (
       clientes.length === 1 &&
-      (currentUser.role === "admin" || currentUser.role === "empleado")
+      (currentUser.role === "admin" || currentUser.role === "empleado") &&
+      currentUser
     ) {
       setSelectedClienteId(clientes[0].id.toString());
     }
   }, [currentUser, clientes]);
 
   useEffect(() => {
-    if (currentUser.role === "cliente" && currentClienteDetalles) {
+    if (currentUser.role === "cliente" && currentClienteDetalles && currentUser) {
       setDireccionEntrega(currentClienteDetalles.direccion || "");
     } else if (
+      currentUser &&
       (currentUser.role === "admin" || currentUser.role === "empleado") &&
       selectedClienteId
     ) {
@@ -59,12 +61,13 @@ const Vender = () => {
       );
       setDireccionEntrega(client ? client.direccion || "" : "");
     } else if (
+      currentUser &&
       (currentUser.role === "admin" || currentUser.role === "empleado") &&
       !selectedClienteId
     ) {
       setDireccionEntrega("");
     }
-  }, [selectedClienteId, clientes, currentUser.role, currentClienteDetalles]);
+  }, [selectedClienteId, clientes, currentUser, currentClienteDetalles]);
 
   const handleQuantityChange = (productId, tamano, value) => {
     const key = `${productId}-${tamano}`;
@@ -74,13 +77,15 @@ const Vender = () => {
   const handleAddToCartClick = (product) => {
     const key = `${product.id}-${product.tamano}`;
     const quantity = itemQuantities[key] || 1;
-    addToCart(product, quantity);
-    setItemQuantities((prev) => ({ ...prev, [key]: 1 }));
+    const success = addToCart(product, quantity);
+    if (success) {
+      setItemQuantities((prev) => ({ ...prev, [key]: 1 }));
+    }
   };
 
   const handleFinalizarVentaClick = async () => {
     let finalSelectedClienteId = selectedClienteId;
-    if (currentUser.role === "cliente" && currentUser.clientId) {
+    if (currentUser && currentUser.role === "cliente" && currentUser.clientId) {
       finalSelectedClienteId = currentUser.clientId.toString();
     }
 
@@ -93,7 +98,7 @@ const Vender = () => {
     const success = await finalizarVenta(saleDetails);
     if (success) {
       refetchProductsList();
-      if (currentUser.role !== "cliente") {
+      if (currentUser && currentUser.role !== "cliente") {
         setSelectedClienteId("");
       }
       setMetodoPago("efectivo");
@@ -107,12 +112,15 @@ const Vender = () => {
     updateCartItemQuantity(cartId, newQuantity);
   };
 
-  if (
+  const isLoading =
     productsLoading ||
-    (loadingClientes &&
-      !currentClienteDetalles &&
-      currentUser.role === "cliente")
-  ) {
+    (currentUser &&
+      loadingClientes &&
+      ((currentUser.role === "cliente" && !currentClienteDetalles) ||
+        ((currentUser.role === "admin" || currentUser.role === "empleado") &&
+          clientes.length === 0)));
+
+  if (isLoading) {
     return <p className="vender-loading-message">Cargando datos...</p>;
   }
   if (productsError)
@@ -245,7 +253,7 @@ const Vender = () => {
           </>
         )}
 
-        {cartItems.length > 0 && (
+        {cartItems.length > 0 && currentUser && (
           <div className="vender-checkout-form">
             <h3 className="vender-section-subtitle">Detalles de la Venta</h3>
             {(currentUser.role === "admin" ||
